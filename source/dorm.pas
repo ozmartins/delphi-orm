@@ -386,7 +386,6 @@ var
   _MappingText: string;
   _MappingStrategy: IMappingStrategy;
   _JSonConfigEnv: ISuperObject;
-  s: ISuperObject;
 begin
   try
     _ConfigText := APersistenceConfiguration.ReadToEnd;
@@ -723,16 +722,12 @@ procedure TSession.FillList(APTypeInfo: PTypeInfo; ACollection: TObject; ACriter
 var
   rt: TRttiType;
   _table: TMappingTable;
-  _fields: TMappingFieldList;
-  // _type_info: PTypeInfo;
   SearcherClassname: string;
   List: IWrappedList;
-  Obj: TObject;
-  _validateable: TdormValidateable;
 begin
   rt := FCTX.GetType(APTypeInfo);
   _table := FMappingStrategy.GetMapping(rt);
-  _fields := _table.Fields;
+
   if assigned(ACriteria) then
     SearcherClassname := TObject(ACriteria).ClassName
   else
@@ -1234,12 +1229,9 @@ var
   SQL: string;
   Table: TMappingTable;
   rt: TRttiType;
-  _fields: TMappingFieldList;
   SearcherClassname: string;
   List: IWrappedList;
-  Obj: TObject;
   CustomCrit: ICustomCriteria;
-  _validateable: TdormValidateable;
   ItemTypeInfo: PTypeInfo;
 begin
   ItemTypeInfo := AClassType.ClassInfo;
@@ -1278,7 +1270,6 @@ begin
     Result := List;
   except
     List.Free;
-    Result := nil;
     raise;
   end;
 end;
@@ -2106,17 +2097,12 @@ procedure TSession.FillListSQL(APTypeInfo: PTypeInfo; ACollection: TObject;
 var
   rt: TRttiType;
   _table: TMappingTable;
-  _fields: TMappingFieldList;
   _type_info: PTypeInfo;
-  SearcherClassname: string;
   List: IWrappedList;
-  Obj: TObject;
-  _validateable: TdormValidateable;
 begin
   _type_info := APTypeInfo;
   rt := FCTX.GetType(_type_info);
   _table := FMappingStrategy.GetMapping(rt);
-  _fields := _table.Fields;
   GetLogger.EnterLevel('FillListSQL');
   TdormUtils.MethodCall(ACollection, 'Clear', []);
   GetStrategy.LoadList(ACollection, rt, _table, ASQLable.ToSQL(self.GetMapping,
@@ -2311,10 +2297,7 @@ function TSession.Load(APTypeInfo: PTypeInfo; ASQLable: ISQLable): TObject;
 var
   rt: TRttiType;
   _table: TMappingTable;
-  _fields: TMappingFieldList;
   _type_info: PTypeInfo;
-  SearcherClassname: string;
-  List: IWrappedList;
   _validateable: TdormValidateable;
   ACollection: TObjectList<TObject>;
   Obj: TObject;
@@ -2322,7 +2305,6 @@ begin
   _type_info := APTypeInfo;
   rt := FCTX.GetType(_type_info);
   _table := FMappingStrategy.GetMapping(rt);
-  _fields := _table.Fields;
   GetLogger.EnterLevel('Load(SQL)');
   ACollection := TObjectList<TObject>.Create(false);
   try

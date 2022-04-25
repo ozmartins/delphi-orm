@@ -27,10 +27,6 @@ uses
 
 type
   TZeosDBOBaseAdapter = class(TBaseAdapter, IdormPersistStrategy)
-  strict private
-    function Load(ARttiType: TRttiType; ATableName: string; AMappingTable: TMappingTable;
-      const Value: TValue): TObject; overload;
-
   private
     function GetZeosDBOReaderFor(ARttiType: TRttiType; AMappingTable: TMappingTable;
       const Value: TValue; AMappingRelationField: TMappingField = nil): TZQuery;
@@ -122,7 +118,6 @@ function TZeosDBOBaseAdapter.CanBeConsideredAsNull(
   const AValue: TValue): boolean;
 var
   v: Extended;
-  s: String;
 begin
   case AValue.Kind of
     tkInteger:
@@ -359,7 +354,6 @@ var
   cmd: TZQuery;
 begin
   GetLogger.EnterLevel('ExecuteAndGetFirst');
-  Result := 0;
   GetLogger.Info('PREPARING: ' + SQL);
   cmd := FB.Prepare(SQL);
 
@@ -381,7 +375,6 @@ function TZeosDBOBaseAdapter.ExecuteCommand(ACommand: IdormCommand): Int64;
 var
   SQL: string;
   reader: TZQuery;
-  CustomCriteria: ICustomCriteria;
 begin
   SQL := ACommand.GetSQL;
   GetLogger.Debug('EXECUTING: ' + SQL);
@@ -625,40 +618,6 @@ begin
       LoadObjectFromZeosDBOReader(AObject, ARttiType, reader, AMappingTable.Fields);
   finally
     reader.Free;
-  end;
-end;
-
-function TZeosDBOBaseAdapter.Load(ARttiType: TRttiType; ATableName: string;
-  AMappingTable: TMappingTable; const Value: TValue): TObject;
-var
-  pk_idx: Integer;
-  pk_attribute_name, pk_field_name, SQL: string;
-  cmd: TZQuery;
-begin
-  Result := nil;
-  pk_idx := GetPKMappingIndex(AMappingTable.Fields);
-
-  if pk_idx = -1 then
-    raise Exception.Create('Invalid primary key for table ' + ATableName);
-
-  pk_attribute_name := AMappingTable.Fields[pk_idx].name;
-  pk_field_name := AMappingTable.Fields[pk_idx].FieldName;
-
-  SQL := 'SELECT ' + GetSelectFieldsList(AMappingTable.Fields, true) + ' FROM ' + ATableName +
-    ' WHERE ' + pk_field_name + ' = :' + pk_field_name;
-
-  GetLogger.Debug('PREPARING: ' + SQL);
-  cmd := FB.Prepare(SQL);
-
-  try
-    FillPrimaryKeyParam(cmd, pk_idx, Value);
-    GetLogger.Debug('EXECUTING PREPARED: ' + SQL);
-    cmd.Open;
-
-    if not cmd.Eof then
-      Result := CreateObjectFromZeosDBOQuery(ARttiType, cmd, AMappingTable);
-  finally
-    cmd.Free;
   end;
 end;
 
