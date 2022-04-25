@@ -6601,12 +6601,5 @@ begin
 end;
 
 {$ENDIF}
-
-{$IFDEF DEBUG}
-initialization
-
-finalization
-  Assert(debugcount = 0, 'Memory leak');
-{$ENDIF}
 end.
 
