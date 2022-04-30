@@ -64,7 +64,7 @@ var
   I: integer;
   Found: Boolean;
 begin
-  Result := False;
+
 
   I := 0;
   Found := False;

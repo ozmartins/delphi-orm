@@ -15,10 +15,10 @@ type
 
   TdormParameter = class
   private
-    FAsString: string;
+
     FStrategy: IdormPersistStrategy;
     procedure SetStrategy(const Value: IdormPersistStrategy);
-    procedure SetValue(const Value: TValue);
+
 
   strict protected
     FParameterType: TdormParameterType;
@@ -146,6 +146,7 @@ type
     function groupBy(AGroupBy: string): TFrom;
     function having(AHaving: string): TFrom;
     function limit(ALimit: Integer): TFrom;
+    function offset(AOffSet: Integer): TFrom;
     function orderBy(AOrderBy: string): TFrom;
 
   end;
@@ -316,7 +317,7 @@ end;
 function TFrom.Where(AWhere: string; AParams: array of const): TFrom;
 var
   v: TVarRec;
-  S: String;
+
 begin
   mWhere := AWhere;
   for v in AParams do
@@ -428,6 +429,12 @@ begin
   Result := Self;
 end;
 
+function TFrom.offset(AOffSet: Integer): TFrom;
+begin
+  mOffSet := inttostr(AOffSet);
+  Result := Self;
+end;
+
 function TFrom.orderBy(AOrderBy: string): TFrom;
 begin
   mOrderBy := AOrderBy;
@@ -501,10 +508,10 @@ begin
   FStrategy := Value;
 end;
 
-procedure TdormParameter.SetValue(const Value: TValue);
-begin
-  FValue := Value;
-end;
+
+
+
+
 
 { TDSQLParser }
 

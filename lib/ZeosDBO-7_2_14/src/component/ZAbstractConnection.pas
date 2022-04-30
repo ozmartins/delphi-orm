@@ -992,7 +992,7 @@ type //To get protected methodes
 procedure TZAbstractConnection.Commit;
 var
   ExplicitTran: Boolean;
-  i: Integer;
+
 begin
   CheckConnected;
   CheckNonAutoCommitMode;
